@@ -35,7 +35,23 @@ const MODEL_MAPPING = {
   'claude-3-sonnet': 'openai/gpt-oss-20b',
   'gemini-pro': 'qwen/qwen3-next-80b-a3b-thinking' 
 };
+// Message trimming to prevent 413 errors
+function trimMessages(messages, maxTokens = 15000) {
+  const system = messages.filter(m => m.role === 'system');
+  const rest = messages.filter(m => m.role !== 'system');
+  
+  let total = JSON.stringify(system).length / 4;
+  const kept = [];
 
+  for (let i = rest.length - 1; i >= 0; i--) {
+    const estimate = JSON.stringify(rest[i]).length / 4;
+    if (total + estimate > maxTokens) break;
+    kept.unshift(rest[i]);
+    total += estimate;
+  }
+
+  return [...system, ...kept];
+}
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
@@ -99,9 +115,9 @@ app.post('/v1/chat/completions', async (req, res) => {
     // Transform OpenAI request to NIM format
     const nimRequest = {
       model: nimModel,
-      messages: messages,
+      messages: trimMessages(messages),
       temperature: temperature || 0.6,
-      max_tokens: max_tokens || 9024,
+      max_tokens: max_tokens || 2048,
       extra_body: ENABLE_THINKING_MODE ? { chat_template_kwargs: { thinking: true } } : undefined,
       stream: stream || false
     };
