@@ -30,7 +30,7 @@ const MODEL_MAPPING = {
 };
 
 // Message trimming
-function trimMessages(messages, maxTokens = 6000) {
+function trimMessages(messages, maxTokens = 8000) {
   let system = messages.filter(m => m.role === 'system');
   const rest = messages.filter(m => m.role !== 'system');
 
