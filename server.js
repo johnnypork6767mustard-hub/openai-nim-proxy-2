@@ -36,10 +36,19 @@ const MODEL_MAPPING = {
   'gemini-pro': 'qwen/qwen3-next-80b-a3b-thinking' 
 };
 // Message trimming to prevent 413 errors
-function trimMessages(messages, maxTokens = 1000) {
-  const system = messages.filter(m => m.role === 'system');
+function trimMessages(messages, maxTokens = 6000) {
+  let system = messages.filter(m => m.role === 'system');
   const rest = messages.filter(m => m.role !== 'system');
-  
+
+  // Trim system message if it's too long
+  if (system.length > 0) {
+    let sysContent = system[0].content;
+    if (sysContent.length > 8000) {
+      sysContent = sysContent.substring(0, 8000) + '...';
+    }
+    system = [{ role: 'system', content: sysContent }];
+  }
+
   let total = JSON.stringify(system).length / 4;
   const kept = [];
 
