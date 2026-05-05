@@ -61,6 +61,10 @@ function trimMessages(messages, maxTokens = 6000) {
 
   return [...system, ...kept];
 }
+// Handle /v1 base path
+app.get('/v1', (req, res) => {
+  res.json({ status: 'ok', message: 'OpenAI NIM Proxy v1' });
+});
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
