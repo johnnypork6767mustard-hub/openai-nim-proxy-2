@@ -36,9 +36,9 @@ function trimMessages(messages, maxTokens = 6000) {
 
   if (system.length > 0) {
     let sysContent = system[0].content;
-    if (sysContent.length > 8000) {
-      sysContent = sysContent.substring(0, 8000) + '...';
-    }
+    if (sysContent.length > 16000) {
+  sysContent = sysContent.substring(0, 16000) + '...';
+}
     system = [{ role: 'system', content: sysContent }];
   }
 
